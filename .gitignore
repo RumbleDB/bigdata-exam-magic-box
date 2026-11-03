@@ -1,4 +1,4 @@
-# Datasets (notebooks/, db/) ship in the release zip. Only the cheatsheet is in git (past semesters: tags cheatsheet-*).
+# Datasets (notebooks/, db/) ship in the release zip. Only the cheatsheet is in git (past semesters: release tags).
 /notebooks/*
 !/notebooks/Cheatsheet.ipynb
 /db/

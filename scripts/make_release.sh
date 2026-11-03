@@ -1,6 +1,7 @@
 #!/bin/sh
 # Build the student zip: compose setup, notebooks and db/ (the SQL dumps).
 #   scripts/make_release.sh 2027-spring
+#   gh release create 2027-spring dist/bigdata-exam-magic-box-2027-spring.zip --title "Exam lab 2027 Spring"
 set -eu
 cd "$(dirname "$0")/.."
 

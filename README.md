@@ -37,14 +37,14 @@ Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; 
 - Roll back `latest`: `. ./.env && docker buildx imagetools create -t ghcr.io/$REPO:latest ghcr.io/$REPO:<good-tag>`
 
 **New semester**
-1. Overwrite `notebooks/Cheatsheet.ipynb`, commit, `git tag cheatsheet-2027-spring`.
+1. Overwrite `notebooks/Cheatsheet.ipynb`, commit and push.
 2. Put the SQL dumps it needs into `db/`. Every `*.sql` there is loaded on first start, alphabetically.
-3. Build and publish the zip:
+3. Build and publish the zip. The release tag (`2027-spring`) also marks that semester's cheatsheet:
    ```sh
    scripts/make_release.sh 2027-spring
-   gh release create data-2027-spring dist/bigdata-exam-magic-box-2027-spring.zip --title "Exam lab 2027 Spring"
+   gh release create 2027-spring dist/bigdata-exam-magic-box-2027-spring.zip --title "Exam lab 2027 Spring"
    ```
 
-Past cheatsheets: `git show cheatsheet-<semester>:notebooks/Cheatsheet.ipynb > old.ipynb`
+Past cheatsheets: `git show 2026-fall:notebooks/Cheatsheet.ipynb > old.ipynb` (any release tag).
 
 **Repo moved?** Update `REPO` in `.env` (CI and `make_release.sh` check it) and ship a new zip.
