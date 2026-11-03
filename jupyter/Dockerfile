@@ -29,7 +29,7 @@ RUN pip install --no-cache-dir --no-deps -r /tmp/base.txt \
 # JSONiq language server. Its ARG is declared here, not at the top, because
 # changing an ARG rebuilds every layer below its declaration.
 # renovate: datasource=npm depName=jsoniq-language-server
-ARG JSONIQ_LS_VERSION=2.16.0
+ARG JSONIQ_LS_VERSION=2.18.0
 RUN npm i -g jsoniq-language-server@${JSONIQ_LS_VERSION} \
     && npm explore jsoniq-language-server -g -- npm run ensure-wrapper \
     && npm cache clean --force
