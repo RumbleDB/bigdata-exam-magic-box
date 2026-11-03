@@ -1,0 +1,26 @@
+# Test stack for tests/run.sh: same services as the real one, tiny fixtures instead of the exam data.
+name: exam-lab-test
+
+services:
+  db:
+    image: postgres:17.6
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - ./fixtures/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      # TCP only answers once the init scripts are done
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "postgres"]
+      interval: 2s
+      retries: 90
+
+  jupyter:
+    image: "${TEST_IMAGE:?run this via tests/run.sh <image>}"
+    pull_policy: never
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./:/home:ro
+    ports:
+      - "127.0.0.1:18888:8888"

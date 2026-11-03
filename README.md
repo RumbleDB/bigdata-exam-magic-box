@@ -1,0 +1,50 @@
+# Exam Docker Magic Box
+
+Docker setup for the Big Data exam: Jupyter (Spark, JSONiq, SQL), PostgreSQL and Adminer. Exercises are in the [course repository](https://github.com/RumbleDB/bigdata-exercises).
+
+## Requirements
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) with Compose 2.33+ (`docker compose version`)
+- 6 GB RAM for Docker (8 GB recommended), 5 GB free disk
+
+## Usage
+
+1. Download the latest `bigdata-exam-magic-box-*.zip` from [Releases](../../releases) and unzip it.
+2. `docker compose up -d`, then open [localhost:8888](http://localhost:8888).
+3. `docker compose down` to stop.
+
+Put exercise notebooks into `notebooks/`. To reset everything, including the database, run `./run.sh`.
+
+**Updates** are automatic: `docker compose up` checks for a new image once a day. To update now: `docker compose pull && docker compose up -d`. No need to download the zip again.
+
+---
+
+## Maintainers
+
+Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; they ship in the release zip. Only `notebooks/Cheatsheet.ipynb` is in git.
+
+**Image updates**
+- Renovate opens a PR for each JSONiq / language server release, and one PR a month for everything else. CI builds and tests each PR on amd64 and arm64.
+- Merging publishes `:latest` and `:YYYY.MM.DD-<sha>`.
+- Python packages: edit `jupyter/requirements.in`, then regenerate the lock:
+  `cd jupyter && uv pip compile requirements.in -o requirements.txt --python-version 3.11 --python-platform linux`
+- Language server: `JSONIQ_LS_VERSION` in `jupyter/Dockerfile`.
+- Test locally: `docker build -t exam-lab:test jupyter && tests/run.sh exam-lab:test`
+- Check versions: `docker compose exec jupyter exam-lab-versions`
+
+**Exams**
+- Pin the image: set `JUPYTER_TAG` in `.env` to a version tag before building the zip.
+- Roll back `latest`: `. ./.env && docker buildx imagetools create -t ghcr.io/$REPO:latest ghcr.io/$REPO:<good-tag>`
+
+**New semester**
+1. Overwrite `notebooks/Cheatsheet.ipynb`, commit, `git tag cheatsheet-2027-spring`.
+2. Put the SQL dumps it needs into `db/`. Every `*.sql` there is loaded on first start, alphabetically.
+3. Build and publish the zip:
+   ```sh
+   scripts/make_release.sh 2027-spring
+   gh release create data-2027-spring dist/bigdata-exam-magic-box-2027-spring.zip --title "Exam lab 2027 Spring"
+   ```
+
+Past cheatsheets: `git show cheatsheet-<semester>:notebooks/Cheatsheet.ipynb > old.ipynb`
+
+**Repo moved?** Update `REPO` in `.env` (CI and `make_release.sh` check it) and ship a new zip.

@@ -1,0 +1,3 @@
+{"order_id": 0, "date": "2018-2-4", "customer": {"first_name": "Preston", "last_name": "Landry"}, "items": [{"product": "fan", "quantity": 5, "price": 1.53}, {"product": "computer screen", "quantity": 6, "price": 1.33}]}
+{"order_id": 1, "date": "2016-1-8", "customer": {"first_name": "Jamari", "last_name": "Dominguez"}, "items": [{"product": "computer screen", "quantity": 2, "price": 1.33}]}
+{"order_id": 2, "date": "2017-5-21", "customer": {"first_name": "Preston", "last_name": "Landry"}, "items": [{"product": "kettle", "quantity": 1, "price": 1.06}, {"product": "computer screen", "quantity": 4, "price": 1.33}]}

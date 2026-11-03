@@ -1,0 +1,11 @@
+# Datasets (notebooks/, db/) ship in the release zip. Only the cheatsheet is in git (past semesters: tags cheatsheet-*).
+/notebooks/*
+!/notebooks/Cheatsheet.ipynb
+/db/
+# Local only: dumps of past exams
+/files/
+/dist/
+/archive/
+.DS_Store
+.ipynb_checkpoints/
+.virtual_documents/

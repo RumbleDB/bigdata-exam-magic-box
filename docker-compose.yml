@@ -1,0 +1,28 @@
+# Use postgres/example user/password credentials
+services:
+  db:
+    image: postgres:17.6
+    volumes:
+      # Every *.sql in db/ is loaded on first start (reset with ./run.sh)
+      - ./db/:/docker-entrypoint-initdb.d/:ro
+    environment:
+      POSTGRES_PASSWORD: example
+
+  jupyter:
+    # Prebuilt image, published by .github/workflows/image.yml.
+    # Checks for a newer version at most once a day; force it with `docker compose pull`.
+    # REPO and JUPYTER_TAG come from .env.
+    image: ghcr.io/${REPO:?REPO is not set, the .env file is missing}:${JUPYTER_TAG:-latest}
+    pull_policy: daily
+    volumes:
+      - ./notebooks/:/home
+    ports:
+      # Only allow access from localhost
+      - "127.0.0.1:8888:8888"
+      # Spark Web UI
+      - "127.0.0.1:4040:4040"
+
+  adminer:
+    image: adminer:6.2.0
+    ports:
+      - "127.0.0.1:8080:8080"

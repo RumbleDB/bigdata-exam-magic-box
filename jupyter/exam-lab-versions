@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""Print the image version and the versions of the main components.
+
+Run it in a notebook (`!exam-lab-versions`) or a terminal, and paste the
+output into bug reports.
+"""
+import json
+import os
+import platform
+import re
+import subprocess
+import sys
+from importlib.metadata import PackageNotFoundError, version
+
+
+def pkg(name):
+    try:
+        return version(name)
+    except PackageNotFoundError:
+        return "not installed"
+
+
+def npm_global(name):
+    try:
+        with open(f"/usr/local/lib/node_modules/{name}/package.json") as f:
+            return json.load(f)["version"]
+    except OSError:
+        return "not installed"
+
+
+def java():
+    try:
+        out = subprocess.run(["java", "-version"], capture_output=True, text=True).stderr
+    except OSError:
+        return "not installed"
+    m = re.search(r'version "([^"]+)"', out)
+    return m.group(1) if m else "unknown"
+
+
+rows = [
+    ("Image", os.environ.get("EXAM_LAB_VERSION", "unknown") + f" ({platform.machine()})"),
+    ("JSONiq (RumbleDB)", pkg("jsoniq")),
+    ("JSONiq Jupyter extension", pkg("jsoniq-jupyterlab-extension")),
+    ("JSONiq language server", npm_global("jsoniq-language-server")),
+    ("Spark (pyspark)", pkg("pyspark")),
+    ("Delta Lake", pkg("delta-spark")),
+    ("JupyterLab", pkg("jupyterlab")),
+    ("JupySQL", pkg("jupysql")),
+    ("pandas", pkg("pandas")),
+    ("Python", platform.python_version()),
+    ("Java", java()),
+]
+width = max(len(name) for name, _ in rows)
+for name, value in rows:
+    print(f"{name:<{width}}  {value}")
+
+# Non-zero if something is missing, so the smoke test notices
+sys.exit(any(value == "not installed" for _, value in rows))
