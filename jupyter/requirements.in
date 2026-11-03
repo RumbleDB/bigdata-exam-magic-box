@@ -3,7 +3,7 @@
 # Renovate regenerates it automatically.
 
 # JSONiq / RumbleDB
-jsoniq==3.0.2
+jsoniq==3.0.3
 jsoniq-jupyterlab-extension==2.0.0
 
 # Jupyter
