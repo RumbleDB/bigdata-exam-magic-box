@@ -27,7 +27,7 @@ Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; 
 - Renovate opens a PR for each JSONiq / language server release, and one PR a month for everything else. CI builds and tests each PR on amd64 and arm64.
 - Merging publishes `:latest` and `:YYYY.MM.DD-<sha>`.
 - Python packages: edit `jupyter/requirements.in`, then regenerate the lock:
-  `cd jupyter && uv pip compile requirements.in -o requirements.txt --python-version 3.11 --python-platform linux`
+  `cd jupyter && uv pip compile requirements.in --output-file=requirements.txt --python-version=3.11 --universal`
 - Language server: `JSONIQ_LS_VERSION` in `jupyter/Dockerfile`.
 - Test locally: `docker build -t exam-lab:test jupyter && tests/run.sh exam-lab:test`
 - Check versions: `docker compose exec jupyter exam-lab-versions`
