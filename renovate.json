@@ -1,61 +1,96 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Every PR is built and smoke-tested on amd64 + arm64 by image.yml; merging publishes the image.",
-  "extends": ["config:recommended", "customManagers:dockerfileVersions"],
-  "timezone": "Europe/Zurich",
-  "labels": ["dependencies"],
-
-  "pip-compile": {
-    "description": "requirements.in is what we choose; requirements.txt is the uv lock generated from it",
-    "managerFilePatterns": ["/(^|/)requirements\\.txt$/"]
-  },
-  "pip_requirements": {
-    "description": "Off: the lock file is handled by pip-compile above, never edited directly",
-    "enabled": false
-  },
-  "docker-compose": {
-    "description": "Off: docker-compose.yml only reaches students via a new release zip; update it by hand each semester",
-    "enabled": false
-  },
-
-  "lockFileMaintenance": {
-    "description": "Monthly: refresh all indirect Python packages in requirements.txt, in one PR",
-    "enabled": true,
-    "extends": ["schedule:monthly"]
-  },
-
-  "packageRules": [
-    {
-      "description": "Default: batch everything into one monthly PR",
-      "matchPackageNames": ["*"],
-      "groupName": "monthly dependency updates",
-      "extends": ["schedule:monthly"]
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "description": "Every PR is built and smoke-tested on amd64 + arm64 by image.yml; merging publishes the image.",
+    "extends": [
+        "config:recommended",
+        "customManagers:dockerfileVersions"
+    ],
+    "timezone": "Europe/Zurich",
+    "labels": [
+        "dependencies"
+    ],
+    "pip-compile": {
+        "description": "requirements.in is what we choose; requirements.txt is the uv lock generated from it",
+        "managerFilePatterns": [
+            "/(^|/)requirements\\.txt$/"
+        ]
     },
-    {
-      "description": "JSONiq: a separate PR per release, as soon as it is published",
-      "matchPackageNames": ["jsoniq", "jsoniq-jupyterlab-extension", "jsoniq-language-server"],
-      "groupName": null,
-      "schedule": ["at any time"],
-      "labels": ["dependencies", "jsoniq"]
+    "pip_requirements": {
+        "description": "Off: the lock file is handled by pip-compile above, never edited directly",
+        "enabled": false
     },
-    {
-      "description": "Stay on Python 3.11: a newer Python can break pyspark/RumbleDB, upgrade it deliberately",
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["python"],
-      "allowedVersions": "/^3\\.11\\./"
+    "docker-compose": {
+        "description": "Off: docker-compose.yml only reaches students via a new release zip; update it by hand each semester",
+        "enabled": false
     },
-    {
-      "description": "Stay on Node 24 LTS",
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["node"],
-      "matchUpdateTypes": ["major"],
-      "enabled": false
+    "lockFileMaintenance": {
+        "description": "Monthly: refresh all indirect Python packages in requirements.txt, in one PR",
+        "enabled": true,
+        "extends": [
+            "schedule:monthly"
+        ]
     },
-    {
-      "description": "Major upgrades of Spark/RumbleDB stack need a human look at the cheatsheets first",
-      "matchPackageNames": ["pyspark", "delta-spark", "jupyterlab"],
-      "matchUpdateTypes": ["major"],
-      "dependencyDashboardApproval": true
-    }
-  ]
+    "packageRules": [
+        {
+            "description": "Default: batch everything into one monthly PR",
+            "matchPackageNames": [
+                "*"
+            ],
+            "groupName": "monthly dependency updates",
+            "extends": [
+                "schedule:monthly"
+            ]
+        },
+        {
+            "description": "JSONiq: a separate PR per release, as soon as it is published",
+            "matchPackageNames": [
+                "jsoniq",
+                "jsoniq-jupyterlab-extension",
+                "jsoniq-language-server"
+            ],
+            "groupName": null,
+            "schedule": [
+                "at any time"
+            ],
+            "labels": [
+                "dependencies",
+                "jsoniq"
+            ]
+        },
+        {
+            "description": "Stay on Python 3.11: a newer Python can break pyspark/RumbleDB, upgrade it deliberately",
+            "matchDatasources": [
+                "docker"
+            ],
+            "matchPackageNames": [
+                "python"
+            ],
+            "allowedVersions": "/^3\\.11\\./"
+        },
+        {
+            "description": "Stay on Node 24 LTS",
+            "matchDatasources": [
+                "docker"
+            ],
+            "matchPackageNames": [
+                "node"
+            ],
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "enabled": false
+        },
+        {
+            "description": "Major upgrades of Spark/RumbleDB stack need a human look at the cheatsheets first",
+            "matchPackageNames": [
+                "pyspark",
+                "delta-spark",
+                "jupyterlab"
+            ],
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "dependencyDashboardApproval": true
+        }
+    ]
 }
