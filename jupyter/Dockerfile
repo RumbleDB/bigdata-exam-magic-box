@@ -4,11 +4,11 @@
 FROM node:24-bookworm-slim AS node
 
 # Split the lock file into JSONiq (released often) and everything else
-FROM python:3.11.15-slim-bookworm AS requirements
+FROM python:3.11.18-slim-bookworm AS requirements
 COPY requirements.txt .
 RUN grep '^jsoniq' requirements.txt > jsoniq.txt && grep -v '^jsoniq' requirements.txt > base.txt
 
-FROM python:3.11.15-slim-bookworm
+FROM python:3.11.18-slim-bookworm
 LABEL org.opencontainers.image.description="Jupyter environment for the Big Data exam (Spark, JSONiq, SQL)"
 
 # Java for Spark / RumbleDB
