@@ -9,6 +9,7 @@
     "labels": [
         "dependencies"
     ],
+    "automerge": false,
     "docker-compose": {
         "description": "Off: docker-compose.yml only reaches students via a new release zip; update it by hand each semester",
         "enabled": false
@@ -22,14 +23,25 @@
     },
     "packageRules": [
         {
-            "description": "Default: batch everything into one monthly PR",
-            "matchPackageNames": [
-                "*"
+            "description": "Batch routine updates into one weekly PR",
+            "matchUpdateTypes": [
+                "minor",
+                "patch",
+                "pin",
+                "digest"
             ],
-            "groupName": "monthly dependency updates",
+            "groupName": "weekly dependency updates",
             "extends": [
-                "schedule:monthly"
+                "schedule:weekly"
             ]
+        },
+        {
+            "description": "Open separate major-update PRs for review without dashboard pre-approval",
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "groupName": null,
+            "dependencyDashboardApproval": false
         },
         {
             "description": "JSONiq: a separate PR per release, as soon as it is published",
@@ -56,31 +68,6 @@
                 "python"
             ],
             "allowedVersions": "/^3\\.11\\./"
-        },
-        {
-            "description": "Stay on Node 24 LTS",
-            "matchDatasources": [
-                "docker"
-            ],
-            "matchPackageNames": [
-                "node"
-            ],
-            "matchUpdateTypes": [
-                "major"
-            ],
-            "enabled": false
-        },
-        {
-            "description": "Major upgrades of Spark/RumbleDB stack need a human look at the cheatsheets first",
-            "matchPackageNames": [
-                "pyspark",
-                "delta-spark",
-                "jupyterlab"
-            ],
-            "matchUpdateTypes": [
-                "major"
-            ],
-            "dependencyDashboardApproval": true
         }
     ]
 }

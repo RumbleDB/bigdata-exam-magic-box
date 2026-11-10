@@ -24,7 +24,9 @@ Put exercise notebooks into `notebooks/`. To reset everything, including the dat
 Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; they ship in the release zip. Only `notebooks/Cheatsheet.ipynb` is in git.
 
 **Image updates**
-- Renovate opens a PR for each JSONiq / language server release, and one PR a month for everything else. CI builds and tests each PR on amd64 and arm64.
+- Renovate opens immediate PRs for JSONiq / language server releases, groups routine updates weekly,
+  and opens separate major-update PRs. Lock-file maintenance runs monthly. Merges are manual;
+  CI builds and tests each PR on amd64 and arm64.
 - Merging publishes `:latest` and `:YYYY.MM.DD-<sha>`.
 - Python packages: edit the grouped dependencies in `jupyter/pyproject.toml`, then regenerate the lock:
   `cd jupyter && uv lock`. Commit both `pyproject.toml` and `uv.lock`.
