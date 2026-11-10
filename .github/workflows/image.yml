@@ -67,6 +67,13 @@ jobs:
             exit 1
           fi
 
+      # The Dockerfile exports uv.lock with --frozen, which trusts the lock as is.
+      # Fail here if pyproject.toml was edited without running `uv lock`.
+      - uses: astral-sh/setup-uv@v10
+      - name: Check uv.lock matches pyproject.toml
+        working-directory: jupyter
+        run: uv lock --check
+
       - id: meta
         uses: docker/metadata-action@v6
         with:
