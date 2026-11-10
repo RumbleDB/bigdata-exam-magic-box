@@ -6,28 +6,28 @@ requires-python = ">=3.11,<3.12"
 [dependency-groups]
 jsoniq = [
     # JSONiq / RumbleDB: supplies compatible PySpark, Delta Lake, and pandas.
-    "jsoniq==3.0.3",
+    "jsoniq==3.1.0",
     # The extension supplies jupyterlab-lsp.
     "jsoniq-jupyterlab-extension==2.0.0",
 ]
 
 base = [
     # Jupyter: JupyterLab supplies ipykernel.
-    "jupyterlab==4.5.5",
+    "jupyterlab==4.6.6",
     # uv environments have no pip; keep `!pip install` working in notebooks.
     "pip==26.3",
 
     # Spark
     "sparksql-magic==0.0.3",
 
-    # SQL: JupySQL supplies jupysql-plugin.
+    # SQL: JupySQL supplies jupysql-plugin. SQLAlchemy 2.1+ uses psycopg 3 for postgresql:// URLs.
     "jupysql==0.11.1",
-    "psycopg2-binary==2.9.12",
+    "psycopg[binary]==3.3.8",
 
     # Spark Connect dependencies imported by JupySQL.
     # grpcio-status supplies a compatible grpcio version.
-    "pyarrow==21.0.0",
-    "grpcio-status==1.74.0",
+    "pyarrow==26.0.1",
+    "grpcio-status==1.85.1",
 ]
 
 [tool.uv]
