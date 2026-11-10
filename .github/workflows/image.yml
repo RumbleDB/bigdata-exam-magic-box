@@ -15,13 +15,11 @@ on:
       - "jupyter/**"
       - "tests/**"
       - ".github/workflows/image.yml"
-      - "docker-compose.yml"
   pull_request:
     paths:
       - "jupyter/**"
       - "tests/**"
       - ".github/workflows/image.yml"
-      - "docker-compose.yml"
   workflow_dispatch:
 
 jobs:
@@ -57,16 +55,6 @@ jobs:
           echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
           platform=${{ matrix.platform }}
           echo "PLATFORM_PAIR=${platform//\//-}" >> "$GITHUB_ENV"
-
-      # Students' docker-compose.yml pulls the Jupyter image by name. If the repo
-      # moved but the file wasn't updated, they would silently stop getting updates.
-      - name: Check docker-compose.yml pulls this repository's image
-        run: |
-          image=$(sed -n 's#^ *image: *\(ghcr\.io/[^:]*\).*#\1#p' docker-compose.yml)
-          if [ "$image" != "$IMAGE" ]; then
-            echo "::error file=docker-compose.yml::It pulls $image, but this repository publishes $IMAGE. Update the image line."
-            exit 1
-          fi
 
       # The Dockerfile exports uv.lock with --frozen, which trusts the lock as is.
       # Fail here if pyproject.toml was edited without running `uv lock`.

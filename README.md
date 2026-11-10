@@ -54,4 +54,4 @@ Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; 
 
 Past cheatsheets: `git show 2026-fall:notebooks/Cheatsheet.ipynb > old.ipynb` (any release tag).
 
-**Repo moved?** Update the Jupyter image in `docker-compose.yml` (CI and `make_release.sh` check it) and ship a new zip.
+**Repo moved?** Update the Jupyter image in `docker-compose.yml` (`make_release.sh` checks it) and ship a new zip.
