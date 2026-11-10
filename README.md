@@ -32,6 +32,8 @@ Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; 
   Docker installs the `base` and `jsoniq` dependency groups directly with `uv sync --locked`.
   Both groups share one lock file; changes to it rebuild the base installation too.
 - Language server: `JSONIQ_LS_VERSION` in `jupyter/Dockerfile`.
+- Python runtime: `jupyter/.python-version` pins the exact version installed by uv;
+  Renovate updates it within Python 3.11. The image uses Node's Debian slim base and installs Java with apt.
 - Test locally: `docker build -t exam-lab:test jupyter && tests/run.sh exam-lab:test`
 - Check versions: `docker compose exec jupyter exam-lab-versions`
 

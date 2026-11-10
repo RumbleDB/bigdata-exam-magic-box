@@ -1,10 +1,9 @@
 # Install the base and JSONiq dependency groups in separate steps.
 # Both use the same lock file, so lock changes invalidate the base install too.
 
-FROM node:24-bookworm-slim AS node
 FROM ghcr.io/astral-sh/uv:0.13.7 AS uv
 
-FROM python:3.11.15-slim-bookworm
+FROM node:24-bookworm-slim
 LABEL org.opencontainers.image.description="Jupyter environment for the Big Data exam (Spark, JSONiq, SQL)"
 
 # Java for Spark / RumbleDB
@@ -12,22 +11,24 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends openjdk-17-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js for the language server, copied from the official image
-COPY --from=node /usr/local/bin/node /usr/local/bin/
-COPY --from=node /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
-RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
-
-# Keep the environment outside /home, where notebooks are mounted.
+# Keep Python and the environment outside /home and the build cache.
+ENV UV_PYTHON_INSTALL_DIR=/opt/python
 ENV UV_PROJECT_ENVIRONMENT=/opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 WORKDIR /opt/exam-lab
+
+# Install the exact version shared with local uv commands and Renovate.
+COPY .python-version ./
+RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
+    --mount=type=cache,target=/root/.cache/uv \
+    uv python install --no-bin
+
 COPY pyproject.toml uv.lock ./
 
 # Install the base group directly from the lock; fail if it is out of date.
 RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
     --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --only-group base --link-mode=copy \
-    && rm -rf /opt/venv/lib/python3.11/site-packages/pyspark/jars/connect-repl
+    uv sync --locked --only-group base --link-mode=copy
 
 # JSONiq language server. Its ARG is declared here, not at the top, because
 # changing an ARG rebuilds every layer below its declaration.
