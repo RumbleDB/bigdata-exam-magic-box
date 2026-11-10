@@ -9,22 +9,13 @@
     "labels": [
         "dependencies"
     ],
-    "pip-compile": {
-        "description": "requirements.in is what we choose; requirements.txt is the uv lock generated from it",
-        "managerFilePatterns": [
-            "/(^|/)requirements\\.txt$/"
-        ]
-    },
-    "pip_requirements": {
-        "description": "Off: the lock file is handled by pip-compile above, never edited directly",
-        "enabled": false
-    },
+    "automerge": false,
     "docker-compose": {
         "description": "Off: docker-compose.yml only reaches students via a new release zip; update it by hand each semester",
         "enabled": false
     },
     "lockFileMaintenance": {
-        "description": "Monthly: refresh all indirect Python packages in requirements.txt, in one PR",
+        "description": "Monthly: refresh all indirect Python packages in uv.lock, in one PR",
         "enabled": true,
         "extends": [
             "schedule:monthly"
@@ -32,14 +23,25 @@
     },
     "packageRules": [
         {
-            "description": "Default: batch everything into one monthly PR",
-            "matchPackageNames": [
-                "*"
+            "description": "Batch routine updates into one weekly PR",
+            "matchUpdateTypes": [
+                "minor",
+                "patch",
+                "pin",
+                "digest"
             ],
-            "groupName": "monthly dependency updates",
+            "groupName": "weekly dependency updates",
             "extends": [
-                "schedule:monthly"
+                "schedule:weekly"
             ]
+        },
+        {
+            "description": "Open separate major-update PRs for review without dashboard pre-approval",
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "groupName": null,
+            "dependencyDashboardApproval": false
         },
         {
             "description": "JSONiq: a separate PR per release, as soon as it is published",
@@ -58,7 +60,7 @@
             ]
         },
         {
-            "description": "Stay on Python 3.11: a newer Python can break pyspark/RumbleDB, upgrade it deliberately",
+            "description": "Keep .python-version on Python 3.11; Renovate's pyenv manager updates patch versions",
             "matchDatasources": [
                 "docker"
             ],
@@ -66,31 +68,6 @@
                 "python"
             ],
             "allowedVersions": "/^3\\.11\\./"
-        },
-        {
-            "description": "Stay on Node 24 LTS",
-            "matchDatasources": [
-                "docker"
-            ],
-            "matchPackageNames": [
-                "node"
-            ],
-            "matchUpdateTypes": [
-                "major"
-            ],
-            "enabled": false
-        },
-        {
-            "description": "Major upgrades of Spark/RumbleDB stack need a human look at the cheatsheets first",
-            "matchPackageNames": [
-                "pyspark",
-                "delta-spark",
-                "jupyterlab"
-            ],
-            "matchUpdateTypes": [
-                "major"
-            ],
-            "dependencyDashboardApproval": true
         }
     ]
 }

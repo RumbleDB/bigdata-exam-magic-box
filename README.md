@@ -24,11 +24,18 @@ Put exercise notebooks into `notebooks/`. To reset everything, including the dat
 Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; they ship in the release zip. Only `notebooks/Cheatsheet.ipynb` is in git.
 
 **Image updates**
-- Renovate opens a PR for each JSONiq / language server release, and one PR a month for everything else. CI builds and tests each PR on amd64 and arm64.
+- Renovate opens immediate PRs for JSONiq / language server releases, groups routine updates weekly,
+  and opens separate major-update PRs. Lock-file maintenance runs monthly. Merges are manual;
+  CI builds and tests each PR on amd64 and arm64.
 - Merging publishes `:latest` and `:YYYY.MM.DD-<sha>`.
-- Python packages: edit `jupyter/requirements.in`, then regenerate the lock:
-  `cd jupyter && uv pip compile requirements.in --output-file=requirements.txt --python-version=3.11 --universal`
+- Python packages: edit the grouped dependencies in `jupyter/pyproject.toml`, then regenerate the lock:
+  `cd jupyter && uv lock`. Commit both `pyproject.toml` and `uv.lock`.
+- Renovate updates Python dependencies and regenerates `uv.lock` in the same PR.
+  Docker exports each dependency group from `uv.lock` and installs `base` before `jsoniq`,
+  so a JSONiq release only rebuilds the small JSONiq layer.
 - Language server: `JSONIQ_LS_VERSION` in `jupyter/Dockerfile`.
+- Python runtime: `jupyter/.python-version` pins the exact version installed by uv;
+  Renovate updates it within Python 3.11. The image uses Node's Debian slim base and installs Java with apt.
 - Test locally: `docker build -t exam-lab:test jupyter && tests/run.sh exam-lab:test`
 - Check versions: `docker compose exec jupyter exam-lab-versions`
 

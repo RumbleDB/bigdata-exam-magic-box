@@ -1,14 +1,17 @@
 # Layers go from rarely to often changing: students only download changed layers,
 # so a JSONiq or language server release is a small update.
 
-FROM node:24-bookworm-slim AS node
+FROM ghcr.io/astral-sh/uv:0.13.7 AS uv
 
-# Split the lock file into JSONiq (released often) and everything else
-FROM python:3.11.15-slim-bookworm AS requirements
-COPY requirements.txt .
-RUN grep '^jsoniq' requirements.txt > jsoniq.txt && grep -v '^jsoniq' requirements.txt > base.txt
+# Split the lock per group. base.txt only changes when the base packages do,
+# so a JSONiq release keeps the large base layer cached.
+FROM uv AS requirements
+WORKDIR /src
+COPY pyproject.toml uv.lock ./
+RUN ["/uv", "export", "--frozen", "--only-group", "base", "-o", "base.txt"]
+RUN ["/uv", "export", "--frozen", "--only-group", "jsoniq", "-o", "jsoniq.txt"]
 
-FROM python:3.11.15-slim-bookworm
+FROM node:24-bookworm-slim
 LABEL org.opencontainers.image.description="Jupyter environment for the Big Data exam (Spark, JSONiq, SQL)"
 
 # Java for Spark / RumbleDB
@@ -16,15 +19,23 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends openjdk-17-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js for the language server, copied from the official image
-COPY --from=node /usr/local/bin/node /usr/local/bin/
-COPY --from=node /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
-RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+# Keep Python and the environment outside /home and the build cache.
+ENV UV_PYTHON_INSTALL_DIR=/opt/python
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+ENV UV_LINK_MODE=copy
+
+# Python version from .python-version, shared with local uv commands and Renovate.
+COPY .python-version /opt/
+RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
+    cd /opt && uv venv --managed-python /opt/venv
 
 # Python packages except JSONiq (minus the unused 45 MB Spark Connect shell)
-COPY --from=requirements base.txt /tmp/
-RUN pip install --no-cache-dir --no-deps -r /tmp/base.txt \
-    && rm -rf /usr/local/lib/python3.11/site-packages/pyspark/jars/connect-repl
+COPY --from=requirements /src/base.txt /tmp/
+RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
+    --mount=type=cache,target=/root/.cache/uv \
+    uv pip install --no-deps -r /tmp/base.txt \
+    && rm -r /opt/venv/lib/python3.11/site-packages/pyspark/jars/connect-repl
 
 # JSONiq language server. Its ARG is declared here, not at the top, because
 # changing an ARG rebuilds every layer below its declaration.
@@ -35,8 +46,10 @@ RUN npm i -g jsoniq-language-server@${JSONIQ_LS_VERSION} \
     && npm cache clean --force
 
 # JSONiq
-COPY --from=requirements jsoniq.txt /tmp/
-RUN pip install --no-cache-dir --no-deps -r /tmp/jsoniq.txt && pip check
+COPY --from=requirements /src/jsoniq.txt /tmp/
+RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
+    --mount=type=cache,target=/root/.cache/uv \
+    uv pip install --no-deps -r /tmp/jsoniq.txt && uv pip check
 
 COPY jupyter_server_config.py /etc/jupyter/
 COPY exam-lab-versions /usr/local/bin/
