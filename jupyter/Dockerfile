@@ -30,10 +30,12 @@ COPY .python-version /opt/
 RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
     cd /opt && uv venv --managed-python /opt/venv
 
+# Python packages except JSONiq (minus the unused 45 MB Spark Connect shell)
 COPY --from=requirements /src/base.txt /tmp/
 RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
     --mount=type=cache,target=/root/.cache/uv \
-    uv pip install --no-deps -r /tmp/base.txt
+    uv pip install --no-deps -r /tmp/base.txt \
+    && rm -r /opt/venv/lib/python3.11/site-packages/pyspark/jars/connect-repl
 
 # JSONiq language server. Its ARG is declared here, not at the top, because
 # changing an ARG rebuilds every layer below its declaration.

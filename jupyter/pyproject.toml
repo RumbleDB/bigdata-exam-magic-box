@@ -14,6 +14,8 @@ jsoniq = [
 base = [
     # Jupyter: JupyterLab supplies ipykernel.
     "jupyterlab==4.5.5",
+    # uv environments have no pip; keep `!pip install` working in notebooks.
+    "pip==26.3",
 
     # Spark
     "sparksql-magic==0.0.3",
