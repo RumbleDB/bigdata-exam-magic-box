@@ -3,7 +3,8 @@ name: Build Jupyter image
 # Every push to main that touches the image publishes:
 #   :latest                 what students get by default
 #   :2026.11.03-a1b2c3d     immutable version (date + commit), pin this for exams
-# Pull requests (incl. Renovate's) build and smoke-test both architectures, no push.
+# Every pull request (incl. Renovate's) builds and smoke-tests both architectures,
+# without pushing, so the required checks always report.
 #
 # Each architecture builds natively on its own runner (no QEMU emulation),
 # pushes by digest, and the `merge` job combines them into one multi-arch tag.
@@ -16,11 +17,16 @@ on:
       - "tests/**"
       - ".github/workflows/image.yml"
   pull_request:
-    paths:
-      - "jupyter/**"
-      - "tests/**"
-      - ".github/workflows/image.yml"
   workflow_dispatch:
+
+# Jobs request only the permissions they need
+permissions: {}
+
+# On main, runs queue so an older run can never move :latest back.
+# On pull requests, a new push cancels the outdated run.
+concurrency:
+  group: image-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # Computed once, so the tag and the version baked into the image (shown by
@@ -48,7 +54,9 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set image name and platform
         run: |
@@ -58,30 +66,31 @@ jobs:
 
       # The Dockerfile exports uv.lock with --frozen, which trusts the lock as is.
       # Fail here if pyproject.toml was edited without running `uv lock`.
-      - uses: astral-sh/setup-uv@v10.3.3 # no floating major tags; Renovate updates it
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+
       - name: Check uv.lock matches pyproject.toml
         working-directory: jupyter
         run: uv lock --check
 
       - id: meta
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.IMAGE }}
           labels: |
             org.opencontainers.image.title=Big Data exam Jupyter
             org.opencontainers.image.version=${{ needs.version.outputs.version }}
 
-      - uses: docker/login-action@v4
-        if: github.event_name != 'pull_request'
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        if: github.ref == 'refs/heads/main'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: docker/setup-buildx-action@v4
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - name: Build
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: jupyter
           platforms: ${{ matrix.platform }}
@@ -101,8 +110,8 @@ jobs:
       # The `merge` job tags it.
       - id: build
         name: Push by digest
-        if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@v7
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: jupyter
           platforms: ${{ matrix.platform }}
@@ -115,14 +124,14 @@ jobs:
           cache-to: type=registry,ref=${{ env.IMAGE }}:buildcache-${{ env.PLATFORM_PAIR }},mode=max,image-manifest=true,oci-mediatypes=true
 
       - name: Export digest
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main'
         run: |
           mkdir -p "${{ runner.temp }}/digests"
           digest="${{ steps.build.outputs.digest }}"
           touch "${{ runner.temp }}/digests/${digest#sha256:}"
 
-      - uses: actions/upload-artifact@v7
-        if: github.event_name != 'pull_request'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: github.ref == 'refs/heads/main'
         with:
           name: digests-${{ env.PLATFORM_PAIR }}
           path: ${{ runner.temp }}/digests/*
@@ -130,7 +139,7 @@ jobs:
           retention-days: 1
 
   merge:
-    if: github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main'
     needs: [version, build]
     runs-on: ubuntu-latest
     permissions:
@@ -139,22 +148,22 @@ jobs:
     steps:
       - run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: ${{ runner.temp }}/digests
           pattern: digests-*
           merge-multiple: true
 
-      - uses: docker/login-action@v4
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: docker/setup-buildx-action@v4
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - id: meta
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.IMAGE }}
           tags: |

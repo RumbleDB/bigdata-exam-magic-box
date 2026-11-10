@@ -3,7 +3,8 @@
     "description": "Every PR is built and smoke-tested on amd64 + arm64 by image.yml; merging publishes the image.",
     "extends": [
         "config:recommended",
-        "customManagers:dockerfileVersions"
+        "customManagers:dockerfileVersions",
+        "helpers:pinGitHubActionDigestsToSemver"
     ],
     "timezone": "Europe/Zurich",
     "labels": [
