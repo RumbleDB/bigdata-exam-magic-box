@@ -11,8 +11,8 @@ services:
   jupyter:
     # Prebuilt image, published by .github/workflows/image.yml.
     # Checks for a newer version at most once a day; force it with `docker compose pull`.
-    # REPO and JUPYTER_TAG come from .env.
-    image: ghcr.io/${REPO:?REPO is not set, the .env file is missing}:${JUPYTER_TAG:-latest}
+    # For an exam, replace `latest` with a version tag like 2026.11.03-a1b2c3d.
+    image: ghcr.io/rumbledb/bigdata-exam-magic-box:latest
     pull_policy: daily
     volumes:
       - ./notebooks/:/home

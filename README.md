@@ -40,8 +40,8 @@ Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; 
 - Check versions: `docker compose exec jupyter exam-lab-versions`
 
 **Exams**
-- Pin the image: set `JUPYTER_TAG` in `.env` to a version tag before building the zip.
-- Roll back `latest`: `. ./.env && docker buildx imagetools create -t ghcr.io/$REPO:latest ghcr.io/$REPO:<good-tag>`
+- Pin the image: in `docker-compose.yml`, replace `latest` in the Jupyter image with a version tag before building the zip.
+- Roll back `latest`: `docker buildx imagetools create -t ghcr.io/rumbledb/bigdata-exam-magic-box:latest ghcr.io/rumbledb/bigdata-exam-magic-box:<good-tag>`
 
 **New semester**
 1. Overwrite `notebooks/Cheatsheet.ipynb`, commit and push.
@@ -54,4 +54,4 @@ Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; 
 
 Past cheatsheets: `git show 2026-fall:notebooks/Cheatsheet.ipynb > old.ipynb` (any release tag).
 
-**Repo moved?** Update `REPO` in `.env` (CI and `make_release.sh` check it) and ship a new zip.
+**Repo moved?** Update the Jupyter image in `docker-compose.yml` (CI and `make_release.sh` check it) and ship a new zip.

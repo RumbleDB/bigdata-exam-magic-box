@@ -15,12 +15,13 @@ on:
       - "jupyter/**"
       - "tests/**"
       - ".github/workflows/image.yml"
-      - ".env"
+      - "docker-compose.yml"
   pull_request:
     paths:
       - "jupyter/**"
       - "tests/**"
       - ".github/workflows/image.yml"
+      - "docker-compose.yml"
   workflow_dispatch:
 
 jobs:
@@ -57,13 +58,13 @@ jobs:
           platform=${{ matrix.platform }}
           echo "PLATFORM_PAIR=${platform//\//-}" >> "$GITHUB_ENV"
 
-      # Students' docker-compose.yml pulls ghcr.io/<REPO from .env>. If the repo
-      # moved but .env wasn't updated, they would silently stop getting updates.
-      - name: Check .env REPO matches this repository
+      # Students' docker-compose.yml pulls the Jupyter image by name. If the repo
+      # moved but the file wasn't updated, they would silently stop getting updates.
+      - name: Check docker-compose.yml pulls this repository's image
         run: |
-          repo=$(sed -n 's/^REPO=//p' .env)
-          if [ "ghcr.io/$repo" != "$IMAGE" ]; then
-            echo "::error file=.env::REPO=$repo but this repository publishes $IMAGE. Update .env."
+          image=$(sed -n 's#^ *image: *\(ghcr\.io/[^:]*\).*#\1#p' docker-compose.yml)
+          if [ "$image" != "$IMAGE" ]; then
+            echo "::error file=docker-compose.yml::It pulls $image, but this repository publishes $IMAGE. Update the image line."
             exit 1
           fi
 
