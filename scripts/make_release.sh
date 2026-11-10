@@ -21,8 +21,8 @@ rm -rf "$OUT" "$OUT.zip"
 trap 'rm -rf "$OUT"' EXIT
 mkdir -p "$OUT"
 cp -R docker-compose.yml run.sh notebooks db "$OUT/"
-# Relative links work on GitHub, not in the unzipped copy
-sed "s#](\.\./\.\./#](https://github.com/$REPO/#g" README.md > "$OUT/README.md"
+# Students only need the usage part; relative links work on GitHub, not in the unzipped copy
+sed -e '/^---$/,$d' -e "s#](\.\./\.\./#](https://github.com/$REPO/#g" README.md > "$OUT/README.md"
 
 (cd dist && zip -qr "$NAME.zip" "$NAME" -x '*/.DS_Store' '*/.ipynb_checkpoints/*' '*/.virtual_documents/*')
 echo "Created $OUT.zip ($(du -h "$OUT.zip" | awk '{print $1}')) with $IMAGE"

@@ -3,8 +3,8 @@
 
 FROM ghcr.io/astral-sh/uv:0.13.7 AS uv
 
-# Split the lock per group. base.txt only changes when the base packages do,
-# so a JSONiq release keeps the large base layer cached.
+# Split the lock per dependency group, so each install layer below only
+# changes when its own packages do.
 FROM uv AS requirements
 WORKDIR /src
 COPY pyproject.toml uv.lock ./
