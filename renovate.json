@@ -9,22 +9,12 @@
     "labels": [
         "dependencies"
     ],
-    "pip-compile": {
-        "description": "requirements.in is what we choose; requirements.txt is the uv lock generated from it",
-        "managerFilePatterns": [
-            "/(^|/)requirements\\.txt$/"
-        ]
-    },
-    "pip_requirements": {
-        "description": "Off: the lock file is handled by pip-compile above, never edited directly",
-        "enabled": false
-    },
     "docker-compose": {
         "description": "Off: docker-compose.yml only reaches students via a new release zip; update it by hand each semester",
         "enabled": false
     },
     "lockFileMaintenance": {
-        "description": "Monthly: refresh all indirect Python packages in requirements.txt, in one PR",
+        "description": "Monthly: refresh all indirect Python packages in uv.lock, in one PR",
         "enabled": true,
         "extends": [
             "schedule:monthly"

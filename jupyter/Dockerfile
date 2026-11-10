@@ -1,12 +1,8 @@
-# Layers go from rarely to often changing: students only download changed layers,
-# so a JSONiq or language server release is a small update.
+# Install the base and JSONiq dependency groups in separate steps.
+# Both use the same lock file, so lock changes invalidate the base install too.
 
 FROM node:24-bookworm-slim AS node
-
-# Split the lock file into JSONiq (released often) and everything else
-FROM python:3.11.15-slim-bookworm AS requirements
-COPY requirements.txt .
-RUN grep '^jsoniq' requirements.txt > jsoniq.txt && grep -v '^jsoniq' requirements.txt > base.txt
+FROM ghcr.io/astral-sh/uv:0.13.7 AS uv
 
 FROM python:3.11.15-slim-bookworm
 LABEL org.opencontainers.image.description="Jupyter environment for the Big Data exam (Spark, JSONiq, SQL)"
@@ -21,10 +17,17 @@ COPY --from=node /usr/local/bin/node /usr/local/bin/
 COPY --from=node /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
 RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 
-# Python packages except JSONiq (minus the unused 45 MB Spark Connect shell)
-COPY --from=requirements base.txt /tmp/
-RUN pip install --no-cache-dir --no-deps -r /tmp/base.txt \
-    && rm -rf /usr/local/lib/python3.11/site-packages/pyspark/jars/connect-repl
+# Keep the environment outside /home, where notebooks are mounted.
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+WORKDIR /opt/exam-lab
+COPY pyproject.toml uv.lock ./
+
+# Install the base group directly from the lock; fail if it is out of date.
+RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
+    --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --only-group base --link-mode=copy \
+    && rm -rf /opt/venv/lib/python3.11/site-packages/pyspark/jars/connect-repl
 
 # JSONiq language server. Its ARG is declared here, not at the top, because
 # changing an ARG rebuilds every layer below its declaration.
@@ -34,9 +37,11 @@ RUN npm i -g jsoniq-language-server@${JSONIQ_LS_VERSION} \
     && npm explore jsoniq-language-server -g -- npm run ensure-wrapper \
     && npm cache clean --force
 
-# JSONiq
-COPY --from=requirements jsoniq.txt /tmp/
-RUN pip install --no-cache-dir --no-deps -r /tmp/jsoniq.txt && pip check
+# Include both groups so the final sync retains the base packages.
+RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
+    --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-default-groups --group base --group jsoniq --link-mode=copy \
+    && uv pip check --python /opt/venv/bin/python
 
 COPY jupyter_server_config.py /etc/jupyter/
 COPY exam-lab-versions /usr/local/bin/
