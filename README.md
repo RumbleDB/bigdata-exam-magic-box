@@ -24,24 +24,17 @@ Put exercise notebooks into `notebooks/`. To reset everything, including the dat
 Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; they ship in the release zip. Only `notebooks/Cheatsheet.ipynb` is in git.
 
 **Image updates**
-- Renovate opens immediate PRs for JSONiq / language server releases, groups routine updates weekly,
-  and opens separate major-update PRs. Lock-file maintenance runs monthly. Merges are manual;
-  CI builds and tests each PR on amd64 and arm64.
+- Renovate opens PRs: JSONiq and language server releases right away, other updates in one weekly PR,
+  major updates separately. CI builds and tests each PR on amd64 and arm64.
 - Merging publishes `:latest` and `:YYYY.MM.DD-<sha>`.
-- Python packages: edit the grouped dependencies in `jupyter/pyproject.toml`, then regenerate the lock:
-  `cd jupyter && uv lock`. Commit both `pyproject.toml` and `uv.lock`.
-- Renovate updates Python dependencies and regenerates `uv.lock` in the same PR.
-  Docker exports each dependency group from `uv.lock` and installs `base` before `jsoniq`,
-  so a JSONiq release only rebuilds the small JSONiq layer.
-- Language server: `JSONIQ_LS_VERSION` in `jupyter/Dockerfile`.
-- Python runtime: `jupyter/.python-version` pins the exact version installed by uv;
-  Renovate updates it within Python 3.11. The image uses Node's Debian slim base and installs Java with apt.
+- Python packages: edit `jupyter/pyproject.toml`, run `cd jupyter && uv lock`, commit both files.
+- Python version: `jupyter/.python-version` (kept on 3.11). Language server: `JSONIQ_LS_VERSION` in `jupyter/Dockerfile`.
 - Test locally: `docker build -t exam-lab:test jupyter && tests/run.sh exam-lab:test`
 - Check versions: `docker compose exec jupyter exam-lab-versions`
 
 **Exams**
-- Pin the image: set `JUPYTER_TAG` in `.env` to a version tag before building the zip.
-- Roll back `latest`: `. ./.env && docker buildx imagetools create -t ghcr.io/$REPO:latest ghcr.io/$REPO:<good-tag>`
+- Pin the image: in `docker-compose.yml`, replace `latest` in the Jupyter image with a version tag before building the zip.
+- Roll back `latest`: `docker buildx imagetools create -t ghcr.io/rumbledb/bigdata-exam-magic-box:latest ghcr.io/rumbledb/bigdata-exam-magic-box:<good-tag>`
 
 **New semester**
 1. Overwrite `notebooks/Cheatsheet.ipynb`, commit and push.
@@ -54,4 +47,4 @@ Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; 
 
 Past cheatsheets: `git show 2026-fall:notebooks/Cheatsheet.ipynb > old.ipynb` (any release tag).
 
-**Repo moved?** Update `REPO` in `.env` (CI and `make_release.sh` check it) and ship a new zip.
+**Repo moved?** Update the Jupyter image in `docker-compose.yml` (`make_release.sh` checks it) and ship a new zip.
