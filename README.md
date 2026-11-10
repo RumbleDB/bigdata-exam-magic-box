@@ -31,8 +31,8 @@ Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; 
 - Python packages: edit the grouped dependencies in `jupyter/pyproject.toml`, then regenerate the lock:
   `cd jupyter && uv lock`. Commit both `pyproject.toml` and `uv.lock`.
 - Renovate updates Python dependencies and regenerates `uv.lock` in the same PR.
-  Docker installs the `base` and `jsoniq` dependency groups directly with `uv sync --locked`.
-  Both groups share one lock file; changes to it rebuild the base installation too.
+  Docker exports each dependency group from `uv.lock` and installs `base` before `jsoniq`,
+  so a JSONiq release only rebuilds the small JSONiq layer.
 - Language server: `JSONIQ_LS_VERSION` in `jupyter/Dockerfile`.
 - Python runtime: `jupyter/.python-version` pins the exact version installed by uv;
   Renovate updates it within Python 3.11. The image uses Node's Debian slim base and installs Java with apt.

@@ -1,7 +1,15 @@
-# Install the base and JSONiq dependency groups in separate steps.
-# Both use the same lock file, so lock changes invalidate the base install too.
+# Layers go from rarely to often changing: students only download changed layers,
+# so a JSONiq or language server release is a small update.
 
 FROM ghcr.io/astral-sh/uv:0.13.7 AS uv
+
+# Split the lock per group. base.txt only changes when the base packages do,
+# so a JSONiq release keeps the large base layer cached.
+FROM uv AS requirements
+WORKDIR /src
+COPY pyproject.toml uv.lock ./
+RUN ["/uv", "export", "--frozen", "--only-group", "base", "-o", "base.txt"]
+RUN ["/uv", "export", "--frozen", "--only-group", "jsoniq", "-o", "jsoniq.txt"]
 
 FROM node:24-bookworm-slim
 LABEL org.opencontainers.image.description="Jupyter environment for the Big Data exam (Spark, JSONiq, SQL)"
@@ -13,22 +21,19 @@ RUN apt-get update \
 
 # Keep Python and the environment outside /home and the build cache.
 ENV UV_PYTHON_INSTALL_DIR=/opt/python
-ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
-WORKDIR /opt/exam-lab
+ENV UV_LINK_MODE=copy
 
-# Install the exact version shared with local uv commands and Renovate.
-COPY .python-version ./
+# Python version from .python-version, shared with local uv commands and Renovate.
+COPY .python-version /opt/
+RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
+    cd /opt && uv venv --managed-python /opt/venv
+
+COPY --from=requirements /src/base.txt /tmp/
 RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
     --mount=type=cache,target=/root/.cache/uv \
-    uv python install --no-bin
-
-COPY pyproject.toml uv.lock ./
-
-# Install the base group directly from the lock; fail if it is out of date.
-RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
-    --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --only-group base --link-mode=copy
+    uv pip install --no-deps -r /tmp/base.txt
 
 # JSONiq language server. Its ARG is declared here, not at the top, because
 # changing an ARG rebuilds every layer below its declaration.
@@ -38,11 +43,11 @@ RUN npm i -g jsoniq-language-server@${JSONIQ_LS_VERSION} \
     && npm explore jsoniq-language-server -g -- npm run ensure-wrapper \
     && npm cache clean --force
 
-# Include both groups so the final sync retains the base packages.
+# JSONiq
+COPY --from=requirements /src/jsoniq.txt /tmp/
 RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
     --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-default-groups --group base --group jsoniq --link-mode=copy \
-    && uv pip check --python /opt/venv/bin/python
+    uv pip install --no-deps -r /tmp/jsoniq.txt && uv pip check
 
 COPY jupyter_server_config.py /etc/jupyter/
 COPY exam-lab-versions /usr/local/bin/
