@@ -52,14 +52,14 @@
             ]
         },
         {
-            "description": "Keep .python-version on Python 3.11; Renovate's pyenv manager updates patch versions",
+            "description": "Keep .python-version on Python 3.13, the newest PySpark/RumbleDB support; Renovate's pyenv manager updates patch versions",
             "matchDatasources": [
                 "docker"
             ],
             "matchPackageNames": [
                 "python"
             ],
-            "allowedVersions": "/^3\\.11\\./"
+            "allowedVersions": "/^3\\.13\\./"
         }
     ]
 }

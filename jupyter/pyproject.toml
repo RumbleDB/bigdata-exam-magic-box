@@ -2,7 +2,7 @@
 name = "bigdata-exam-lab"
 version = "0.1.0"
 description = "Jupyter environment for the Big Data exam (Spark, JSONiq, SQL)"
-requires-python = ">=3.11,<3.12"
+requires-python = ">=3.13,<3.14"
 [dependency-groups]
 jsoniq = [
     # JSONiq / RumbleDB: supplies compatible PySpark, Delta Lake, and pandas.

@@ -11,12 +11,12 @@ COPY pyproject.toml uv.lock ./
 RUN ["/uv", "export", "--frozen", "--only-group", "base", "-o", "base.txt"]
 RUN ["/uv", "export", "--frozen", "--only-group", "jsoniq", "-o", "jsoniq.txt"]
 
-FROM node:26-bookworm-slim
+FROM node:26-trixie-slim
 LABEL org.opencontainers.image.description="Jupyter environment for the Big Data exam (Spark, JSONiq, SQL)"
 
 # Java for Spark / RumbleDB
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends openjdk-17-jre-headless \
+    && apt-get install -y --no-install-recommends openjdk-21-jre-headless \
     && rm -rf /var/lib/apt/lists/*
 
 # Keep Python and the environment outside /home and the build cache.
@@ -35,7 +35,7 @@ COPY --from=requirements /src/base.txt /tmp/
 RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
     --mount=type=cache,target=/root/.cache/uv \
     uv pip install --no-deps -r /tmp/base.txt \
-    && rm -r /opt/venv/lib/python3.11/site-packages/pyspark/jars/connect-repl
+    && rm -r /opt/venv/lib/python3.*/site-packages/pyspark/jars/connect-repl
 
 # JSONiq language server. Its ARG is declared here, not at the top, because
 # changing an ARG rebuilds every layer below its declaration.
