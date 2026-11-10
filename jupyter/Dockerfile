@@ -11,7 +11,7 @@ COPY pyproject.toml uv.lock ./
 RUN ["/uv", "export", "--frozen", "--only-group", "base", "-o", "base.txt"]
 RUN ["/uv", "export", "--frozen", "--only-group", "jsoniq", "-o", "jsoniq.txt"]
 
-FROM node:24-bookworm-slim
+FROM node:26-bookworm-slim
 LABEL org.opencontainers.image.description="Jupyter environment for the Big Data exam (Spark, JSONiq, SQL)"
 
 # Java for Spark / RumbleDB
