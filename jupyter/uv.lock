@@ -168,7 +168,7 @@ base = [
     { name = "sparksql-magic", specifier = "==0.0.3" },
 ]
 jsoniq = [
-    { name = "jsoniq", specifier = "==3.1.0" },
+    { name = "jsoniq", specifier = "==3.1.1" },
     { name = "jsoniq-jupyterlab-extension", specifier = "==2.0.0" },
 ]
 
@@ -576,16 +576,16 @@ wheels = [
 
 [[package]]
 name = "jsoniq"
-version = "3.1.0"
+version = "3.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "delta-spark" },
     { name = "pandas" },
     { name = "pyspark" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/34/04/50f099e58cd4eed321817b921f8a30173da0d715db85514641d42bb58bda/jsoniq-3.1.0.tar.gz", hash = "sha256:c24fb309a954c17a9d9ffaad5fe1053a856150f3c694a8a622ea2da5c4390537", size = 74765089, upload-time = "2026-11-09T13:52:42.179Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/99/3d/21af096c97cda8ccacc792a52c2ab0dd22151cda1328503d0d32c09a4072/jsoniq-3.1.1.tar.gz", hash = "sha256:f2dc7098060efdb05b5e5a2fa09659e2e56596beb28c93fed4f79aac90fe1e12", size = 74766612, upload-time = "2026-11-12T13:29:51.712Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/00/ba/dc2bcbf6afd7be7bd11ac548cca712500b08084f5b537a261a96f4297b65/jsoniq-3.1.0-py3-none-any.whl", hash = "sha256:92ddd855396d1ca23bcdb028679c196810394292519f3fa770241c1be56403a3", size = 74742508, upload-time = "2026-11-09T13:52:36.587Z" },
+    { url = "https://files.pythonhosted.org/packages/d3/fb/06edc3670ea768777d648a348029199b4ab91c0ab672bd1732875231fd32/jsoniq-3.1.1-py3-none-any.whl", hash = "sha256:9e5aab5c547f3af61d902c8cb74ced4f774dfd464d586dbba82584095056f4fc", size = 74742861, upload-time = "2026-11-12T13:29:47.892Z" },
 ]
 
 [[package]]
