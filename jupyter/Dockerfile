@@ -40,7 +40,7 @@ RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
 # JSONiq language server. Its ARG is declared here, not at the top, because
 # changing an ARG rebuilds every layer below its declaration.
 # renovate: datasource=npm depName=jsoniq-language-server
-ARG JSONIQ_LS_VERSION=2.19.0
+ARG JSONIQ_LS_VERSION=2.20.2
 RUN npm i -g jsoniq-language-server@${JSONIQ_LS_VERSION} \
     && npm explore jsoniq-language-server -g -- npm run ensure-wrapper \
     && npm cache clean --force
