@@ -48,6 +48,9 @@ ENV JSONIQ_LSP_CACHE_DIR=/opt/jsoniq-lsp
 RUN python -m jsoniq_jupyterlab_extension ensure-wrapper
 
 COPY jupyter_server_config.py /etc/jupyter/
+# Default JupyterLab settings: the JSONiq language server uses RumbleDB, with
+# Delta Lake on, like the notebooks. Students can change them in Settings.
+COPY overrides.json /opt/venv/share/jupyter/lab/settings/
 COPY exam-lab-versions /usr/local/bin/
 
 # Shown by exam-lab-versions; CI passes the published tag
