@@ -13,7 +13,7 @@ Docker setup for the Big Data exam: Jupyter (Spark, JSONiq, SQL), PostgreSQL and
 2. `docker compose up -d`, then open [localhost:8888](http://localhost:8888).
 3. `docker compose down` to stop.
 
-Put exercise notebooks into `notebooks/`. To reset everything, including the database, run `./run.sh`.
+Put exercise notebooks into `notebooks/`; the datasets are in `notebooks/dataset/`. To reset everything, including the database, run `./run.sh`.
 
 **Updates** are automatic: `docker compose up` checks for a new image once a day. To update now: `docker compose pull && docker compose up -d`. No need to download the zip again.
 
@@ -21,7 +21,7 @@ Put exercise notebooks into `notebooks/`. To reset everything, including the dat
 
 ## Maintainers
 
-Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; they ship in the release zip. Only `notebooks/Cheatsheet.ipynb` is in git.
+Git holds the image and tooling. Datasets (`notebooks/dataset/`, `db/`) are not in git; they ship in the release zip. Only `notebooks/Cheatsheet.ipynb` is in git.
 
 **Image updates**
 - Renovate opens PRs: JSONiq and JSONiq extension releases right away, other updates in one weekly PR,
