@@ -169,7 +169,7 @@ base = [
 ]
 jsoniq = [
     { name = "jsoniq", specifier = "==3.1.0" },
-    { name = "jsoniq-jupyterlab-extension", specifier = "==2.0.0" },
+    { name = "jsoniq-jupyterlab-extension", specifier = "==3.0.0" },
 ]
 
 [[package]]
@@ -590,16 +590,15 @@ wheels = [
 
 [[package]]
 name = "jsoniq-jupyterlab-extension"
-version = "2.0.0"
+version = "3.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "jupyter-lsp" },
+    { name = "jupyter-server" },
     { name = "jupyterlab" },
-    { name = "jupyterlab-lsp" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e3/67/bd1291460393b2b6df264bca1e06c2136321cf8de7627bd99537aca86a10/jsoniq_jupyterlab_extension-2.0.0.tar.gz", hash = "sha256:e75c537b18c24c3be69f159e19c243d7f90324db9e37e0c60c8decc592e519c5", size = 487231, upload-time = "2026-08-06T14:08:26.091Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b6/79/c440d21d1ef0d6f460322c4232398a8fa329361bc56383f7b6a5a0fcff48/jsoniq_jupyterlab_extension-3.0.0.tar.gz", hash = "sha256:16d4e75471cbe011da29a3c0e1bb7f644687251464e64207f2f803db65e2f951", size = 791881, upload-time = "2026-11-16T14:20:11.284Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a1/10/716592db402c55bf3b3546e2d8378c1556ca8022fbc494bde8b4033833b6/jsoniq_jupyterlab_extension-2.0.0-py3-none-any.whl", hash = "sha256:67cc0a5e2f3f01164612c57813831d62b28b205615367e1443834d27dbab23f5", size = 234621, upload-time = "2026-08-06T14:08:24.836Z" },
+    { url = "https://files.pythonhosted.org/packages/23/a3/84090aaf1b99994fa134411d1a714779a3c8b345d371585ffca167a3b335/jsoniq_jupyterlab_extension-3.0.0-py3-none-any.whl", hash = "sha256:0335930e09bfad758eccaf292cd5d1472faa39f535df5a786d02988f78172637", size = 610168, upload-time = "2026-11-16T14:20:09.278Z" },
 ]
 
 [[package]]
@@ -820,19 +819,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/51/43/490a500e421a46900c8afb0c912c1bf3c9977c85831a3815e2c2139309a9/jupyterlab-4.6.6.tar.gz", hash = "sha256:5f6fbb409158167aeefb5781d6f0b228e24b493cb6e6f1320fb5bc8897acc223", size = 28406802, upload-time = "2026-11-06T14:02:39.228Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/69/f0/842ff0c6ed2e9a4d027d32576813ef92c014f72743a3e745e0a9ce9df24b/jupyterlab-4.6.6-py3-none-any.whl", hash = "sha256:4261910ccf1ecad6e0b3ca0debe96d4fde9735bfc9707509c125aab850e06b81", size = 17334944, upload-time = "2026-11-06T14:02:30.924Z" },
-]
-
-[[package]]
-name = "jupyterlab-lsp"
-version = "5.3.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "jupyter-lsp" },
-    { name = "jupyterlab" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/87/72/38878b13f73fdbff3b776d274ef1b070e1a8afc824049b67ef5666b6b5f0/jupyterlab_lsp-5.3.0.tar.gz", hash = "sha256:bdf014febc0ec297ff69087e957549d724eb0c29df3f24d4f4c40758a71afc3f", size = 761351, upload-time = "2026-04-02T08:10:05.004Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/95/7a/cc44f9b548f126372ed48ca0f9691f7802204e1dbdea14ab091f411900fb/jupyterlab_lsp-5.3.0-py3-none-any.whl", hash = "sha256:89f519c8de8ca0835551f40ddf69bf6a769411b0b1e75f5752fbe38d45e75f23", size = 1571008, upload-time = "2026-04-02T08:10:00.033Z" },
 ]
 
 [[package]]

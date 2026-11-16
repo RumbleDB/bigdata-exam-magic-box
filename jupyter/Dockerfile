@@ -1,5 +1,5 @@
 # Layers go from rarely to often changing: students only download changed layers,
-# so a JSONiq or language server release is a small update.
+# so a JSONiq release is a small update.
 
 FROM ghcr.io/astral-sh/uv:0.13.7 AS uv
 
@@ -37,19 +37,15 @@ RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
     uv pip install --no-deps -r /tmp/base.txt \
     && rm -r /opt/venv/lib/python3.*/site-packages/pyspark/jars/connect-repl
 
-# JSONiq language server. Its ARG is declared here, not at the top, because
-# changing an ARG rebuilds every layer below its declaration.
-# renovate: datasource=npm depName=jsoniq-language-server
-ARG JSONIQ_LS_VERSION=2.19.0
-RUN npm i -g jsoniq-language-server@${JSONIQ_LS_VERSION} \
-    && npm explore jsoniq-language-server -g -- npm run ensure-wrapper \
-    && npm cache clean --force
-
-# JSONiq
 COPY --from=requirements /src/jsoniq.txt /tmp/
 RUN --mount=from=uv,source=/uv,target=/usr/local/bin/uv \
     --mount=type=cache,target=/root/.cache/uv \
     uv pip install --no-deps -r /tmp/jsoniq.txt && uv pip check
+
+# The language server runs with Node.js (from the base image) and downloads
+# RumbleDB on first use; fetch it now, outside /home, so it works offline.
+ENV JSONIQ_LSP_CACHE_DIR=/opt/jsoniq-lsp
+RUN python -m jsoniq_jupyterlab_extension ensure-wrapper
 
 COPY jupyter_server_config.py /etc/jupyter/
 COPY exam-lab-versions /usr/local/bin/

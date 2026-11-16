@@ -40,8 +40,7 @@
             "description": "JSONiq: a separate PR per release, as soon as it is published",
             "matchPackageNames": [
                 "jsoniq",
-                "jsoniq-jupyterlab-extension",
-                "jsoniq-language-server"
+                "jsoniq-jupyterlab-extension"
             ],
             "groupName": null,
             "schedule": [

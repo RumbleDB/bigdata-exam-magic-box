@@ -4,7 +4,6 @@
 Run it in a notebook (`!exam-lab-versions`) or a terminal, and paste the
 output into bug reports.
 """
-import json
 import os
 import platform
 import re
@@ -17,14 +16,6 @@ def pkg(name):
     try:
         return version(name)
     except PackageNotFoundError:
-        return "not installed"
-
-
-def npm_global(name):
-    try:
-        with open(f"/usr/local/lib/node_modules/{name}/package.json") as f:
-            return json.load(f)["version"]
-    except OSError:
         return "not installed"
 
 
@@ -41,7 +32,6 @@ rows = [
     ("Image", os.environ.get("EXAM_LAB_VERSION", "unknown") + f" ({platform.machine()})"),
     ("JSONiq (RumbleDB)", pkg("jsoniq")),
     ("JSONiq Jupyter extension", pkg("jsoniq-jupyterlab-extension")),
-    ("JSONiq language server", npm_global("jsoniq-language-server")),
     ("Spark (pyspark)", pkg("pyspark")),
     ("Delta Lake", pkg("delta-spark")),
     ("JupyterLab", pkg("jupyterlab")),
