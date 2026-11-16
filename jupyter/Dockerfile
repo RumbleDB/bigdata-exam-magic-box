@@ -48,6 +48,11 @@ ENV JSONIQ_LSP_CACHE_DIR=/opt/jsoniq-lsp
 RUN python -m jsoniq_jupyterlab_extension ensure-wrapper
 
 COPY jupyter_server_config.py /etc/jupyter/
+
+# Spark defaults: Delta Lake on in every session, without downloads
+COPY spark-defaults.conf /etc/spark/
+ENV SPARK_CONF_DIR=/etc/spark
+
 # Default JupyterLab settings: the JSONiq language server uses RumbleDB, with
 # Delta Lake on, like the notebooks. Students can change them in Settings.
 COPY overrides.json /opt/venv/share/jupyter/lab/settings/
