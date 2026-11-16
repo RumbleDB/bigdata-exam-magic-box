@@ -24,11 +24,11 @@ Put exercise notebooks into `notebooks/`. To reset everything, including the dat
 Git holds the image and tooling. Datasets (`notebooks/`, `db/`) are not in git; they ship in the release zip. Only `notebooks/Cheatsheet.ipynb` is in git.
 
 **Image updates**
-- Renovate opens PRs: JSONiq and language server releases right away, other updates in one weekly PR,
+- Renovate opens PRs: JSONiq and JSONiq extension releases right away, other updates in one weekly PR,
   major updates separately. CI builds and tests each PR on amd64 and arm64.
 - Merging publishes `:latest` and `:YYYY.MM.DD-<sha>`.
 - Python packages: edit `jupyter/pyproject.toml`, run `cd jupyter && uv lock`, commit both files.
-- Python version: `jupyter/.python-version` (kept on 3.13). Language server: `JSONIQ_LS_VERSION` in `jupyter/Dockerfile`.
+- Python version: `jupyter/.python-version` (kept on 3.13). The JSONiq language server is bundled with `jsoniq-jupyterlab-extension`.
 - Test locally: `docker build -t exam-lab:test jupyter && tests/run.sh exam-lab:test`
 - Check versions: `docker compose exec jupyter exam-lab-versions`
 

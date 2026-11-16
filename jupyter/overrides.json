@@ -1,0 +1,8 @@
+{
+    "jsoniq-jupyterlab-extension:plugin": {
+        "rumbleEnabled": true,
+        "lakehouseFormats": {
+            "delta": true
+        }
+    }
+}

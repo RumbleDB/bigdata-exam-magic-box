@@ -20,11 +20,13 @@ def pkg(name):
         return "not installed"
 
 
-def npm_global(name):
+def language_server():
+    """Version of the language server bundled with the JupyterLab extension."""
     try:
-        with open(f"/usr/local/lib/node_modules/{name}/package.json") as f:
+        from jsoniq_jupyterlab_extension.language_server import BUNDLED_SERVER
+        with open(BUNDLED_SERVER.parents[2] / "package.json") as f:
             return json.load(f)["version"]
-    except OSError:
+    except (ImportError, OSError):
         return "not installed"
 
 
@@ -41,7 +43,7 @@ rows = [
     ("Image", os.environ.get("EXAM_LAB_VERSION", "unknown") + f" ({platform.machine()})"),
     ("JSONiq (RumbleDB)", pkg("jsoniq")),
     ("JSONiq Jupyter extension", pkg("jsoniq-jupyterlab-extension")),
-    ("JSONiq language server", npm_global("jsoniq-language-server")),
+    ("JSONiq language server", language_server()),
     ("Spark (pyspark)", pkg("pyspark")),
     ("Delta Lake", pkg("delta-spark")),
     ("JupyterLab", pkg("jupyterlab")),

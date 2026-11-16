@@ -6,9 +6,8 @@ requires-python = ">=3.13,<3.14"
 [dependency-groups]
 jsoniq = [
     # JSONiq / RumbleDB: supplies compatible PySpark, Delta Lake, and pandas.
-    "jsoniq==3.1.0",
-    # The extension supplies jupyterlab-lsp.
-    "jsoniq-jupyterlab-extension==2.0.0",
+    "jsoniq==3.1.1",
+    "jsoniq-jupyterlab-extension==3.0.0",
 ]
 
 base = [
