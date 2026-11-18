@@ -27,6 +27,11 @@ base = [
     # grpcio-status supplies a compatible grpcio version.
     "pyarrow==26.0.1",
     "grpcio-status==1.85.1",
+
+    # Language Server Protocol (LSP) support for JupyterLab.
+    # Only for Python. JSONiq support is provided by the jsoniq-jupyterlab-extension above.
+    "jupyterlab-lsp==5.3.0",
+    "pyrefly==1.4.1",
 ]
 
 [tool.uv]
