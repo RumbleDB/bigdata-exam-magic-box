@@ -1,0 +1,35 @@
+# Use postgres/example user/password credentials
+
+services:
+  # Document Stores
+  mongo:
+    image: docker.io/library/mongo:8.0
+    container_name: mongo
+    profiles: ["mongo"]
+    restart: "no"
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - ./:/home
+      - ./init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+    networks:
+      - magic-net
+
+  mongo-express:
+    image: docker.io/library/mongo-express:latest
+    restart: "no"
+    profiles: ["mongo"]
+    ports:
+      - "127.0.0.1:8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_BASICAUTH=false
+    depends_on:
+      - mongo
+    networks:
+      - magic-net
+
+networks:
+  magic-net:
+    name: magic-box-network
+    external: true
