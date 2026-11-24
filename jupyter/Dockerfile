@@ -1,7 +1,7 @@
 # Layers go from rarely to often changing: students only download changed layers,
 # so a JSONiq release is a small update.
 
-FROM ghcr.io/astral-sh/uv:0.13.7 AS uv
+FROM ghcr.io/astral-sh/uv:0.13.10 AS uv
 
 # Split the lock per dependency group, so each install layer below only
 # changes when its own packages do.
