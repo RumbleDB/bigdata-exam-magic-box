@@ -2,7 +2,7 @@
 name = "bigdata-exam-lab"
 version = "0.1.0"
 description = "Jupyter environment for the Big Data exam (Spark, JSONiq, SQL)"
-requires-python = ">=3.13,<3.14"
+requires-python = ">=3.15,<3.16"
 [dependency-groups]
 jsoniq = [
     # JSONiq / RumbleDB: supplies compatible PySpark, Delta Lake, and pandas.
@@ -21,12 +21,12 @@ base = [
 
     # SQL: JupySQL supplies jupysql-plugin. SQLAlchemy 2.1+ uses psycopg 3 for postgresql:// URLs.
     "jupysql==0.11.1",
-    "psycopg[binary]==3.3.8",
+    "psycopg[binary]==3.3.9",
 
     # Spark Connect dependencies imported by JupySQL.
     # grpcio-status supplies a compatible grpcio version.
     "pyarrow==26.0.1",
-    "grpcio-status==1.85.1",
+    "grpcio-status==1.85.4",
 ]
 
 [tool.uv]
